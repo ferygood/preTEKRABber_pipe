@@ -1,0 +1,45 @@
+output_dir = config["output_dir"]
+
+rule all:
+    input:
+        expand("{output_dir}/aligned/{prefix}_Aligned.sortedByCoord.out.bam", output_dir=output_dir, prefix=config["fastq_prefixes"]),
+        expand("{output_dir}/counts/{prefix}.cntTable", output_dir=output_dir, prefix=config["fastq_prefixes"])
+
+
+rule trim_reads:
+    input:
+        fastq_r1="data/{prefix}.r1.fastq.gz",
+        fastq_r2="data/{prefix}.r2.fastq.gz"
+    output:
+        r1_out="{output_dir}/trimmed/{prefix}_trimmed.r1.fastq.gz",
+        r2_out="{output_dir}/trimmed/{prefix}_trimmed.r2.fastq.gz"
+    conda:
+        "envs/fastp_star.yaml"
+    shell:
+        "fastp -i {input.fastq_r1} -I {input.fastq_r2} -o {output.r1_out} -O {output.r2_out}"
+
+rule align_reads:
+    input:
+        r1_in="{output_dir}/trimmed/{prefix}_trimmed.r1.fastq.gz",
+        r2_in="{output_dir}/trimmed/{prefix}_trimmed.r2.fastq.gz"
+    output:
+        bam_out="{output_dir}/aligned/{prefix}_Aligned.sortedByCoord.out.bam"
+    conda:
+        "envs/fastp_star.yaml"
+    params:
+        genome_dir=config["packages"]["star"]["genome_dir"]
+    shell:
+        "STAR --runThreadN 16 --readFilesCommand zcat --genomeDir {params.genome_dir} --readFilesIn {input.r1_in} {input.r2_in} --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 100 --winAnchorMultimapNmax 100 --outFileNamePrefix {output.bam_out}"
+
+rule quantify_counts:
+    input:
+        bam_in="{output_dir}/aligned/{prefix}_Aligned.sortedByCoord.out.bam",
+        gtf=config["packages"]["tetranscripts"]["gtf"],
+        rmsk=config["packages"]["tetranscripts"]["rmsk"]
+    output:
+        counts_out="{output_dir}/counts/{prefix}.cntTable"
+    conda:
+        "envs/TEcount.yaml"
+    shell:
+        "TEcount -b {input.bam_in} --GTF {input.gtf} --TE {input.rmsk} --sortByPos --project {output.counts_out} "
+
