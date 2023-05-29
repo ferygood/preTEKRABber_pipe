@@ -29,7 +29,7 @@ rule align_reads:
     params:
         genome_dir=config["packages"]["star"]["genome_dir"]
     shell:
-        "STAR --runThreadN 16 --readFilesCommand zcat --genomeDir {params.genome_dir} --readFilesIn {input.r1_in} {input.r2_in} --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 100 --winAnchorMultimapNmax 100 --outFileNamePrefix {output.bam_out}"
+        "STAR --runThreadN 16 --readFilesCommand zcat --genomeDir {params.genome_dir} --readFilesIn {input.r1_in} {input.r2_in} --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 100 --winAnchorMultimapNmax 100 --outFileNamePrefix {output_dir}/aligned/{wildcards.prefix}"
 
 rule quantify_counts:
     input:
