@@ -29,11 +29,21 @@ rule align_reads:
     params:
         genome_dir=config["packages"]["star"]["genome_dir"]
     shell:
-        "STAR --runThreadN 16 --readFilesCommand zcat --genomeDir {params.genome_dir} --readFilesIn {input.r1_in} {input.r2_in} --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 100 --winAnchorMultimapNmax 100 --outFileNamePrefix {output_dir}/aligned/{wildcards.prefix}"
+        "STAR --runThreadN 16 --readFilesCommand zcat --genomeDir {params.genome_dir} --readFilesIn {input.r1_in} {input.r2_in} --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 100 --winAnchorMultimapNmax 100 --outFileNamePrefix {output_dir}/aligned/{wildcards.prefix}_"
+
+rule sort_by_name:
+    input:
+        bam_in="{output_dir}/aligned/{prefix}_Aligned.sortedByCoord.out.bam"
+    output:
+        bam_out="{output_dir}/aligned_sorted/{prefix}_sortedByName.bam"
+    conda:
+        "envs/TEcount.yaml"
+    shell:
+        "samtools sort -n {input.bam_in} -o {output.bam_out}"
 
 rule quantify_counts:
     input:
-        bam_in="{output_dir}/aligned/{prefix}_Aligned.sortedByCoord.out.bam",
+        bam_in="{output_dir}/aligned_sorted/{prefix}_sortedByName.bam",
         gtf=config["packages"]["tetranscripts"]["gtf"],
         rmsk=config["packages"]["tetranscripts"]["rmsk"]
     output:
@@ -41,5 +51,5 @@ rule quantify_counts:
     conda:
         "envs/TEcount.yaml"
     shell:
-        "TEcount -b {input.bam_in} --GTF {input.gtf} --TE {input.rmsk} --sortByPos --project {output.counts_out} "
+        "TEcount -b {input.bam_in} --GTF {input.gtf} --TE {input.rmsk} --project {output.counts_out} "
 

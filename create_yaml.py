@@ -41,7 +41,7 @@ def create_yaml_file(yaml_file, output_dir):
 if __name__ == "__main__":
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Create YAML file with fastq prefixes")
-    parser.add_argument("-yml", "--yaml_file", required=True, help="Output YAML file")
+    parser.add_argument("-yaml", "--yaml_file", required=True, help="Output YAML file")
     parser.add_argument("-outdir", "--output_dir", required=True, help="Output folder for saving results")
     args = parser.parse_args()
 

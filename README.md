@@ -6,18 +6,23 @@ This pipeline is to generate genes and transposable elements (TEs) from `fastq.g
 2. Use [STAR](https://github.com/alexdobin/STAR) to align reads to reference genome
 3. Use [TEtranscripts](https://github.com/mhammell-laboratory/TEtranscripts) to quantify the expression of genes and transposable elements
 
-The output will be saved inside a newly created folder `./results` after running the snakemake pipeline. The count table, which has the suffix `.cntTable` will be use for down-stream analysis using [TEKRABber](http://www.bioconductor.org/packages/release/bioc/html/TEKRABber.html).
+The output will be saved inside a newly created folder `./results` after running the snakemake pipeline. The count table, which has the suffix `.cntTable` will be used for down-stream analysis using [TEKRABber](http://www.bioconductor.org/packages/release/bioc/html/TEKRABber.html).
 
 ## How to use
 1. Install conda, and create a conda environment that can run snakemake (v7.25.0).
 2. Clone this repository to your working directory
 3. In this clone-repo, create a `data/` folder that you put all of your fastq.gz files in it
-4. Use the `create_yml.py` script to create a config file for snakemake to run
+4. Use the `create_yaml.py` script to create a config file for snakemake to run
+```python
+python create_yaml.py -outdir <your_out_put_dir_path> -yaml <your_config_yaml_file_name>
+```
+
 5. If we want to execute snakemake in your command line, you can:
 ```bash
-snakemake -s preTEKRABber.snake --configfile your-config.yml -c 1
+snakemake -s preTEKRABber.snake --configfile your-config.yaml -c 1
 ```
-If you prefer to run it in cluster, for example, using slurm, you can modified the `runSnake.sh` script and then:
+   
+   If you prefer to run it in cluster, for example, using slurm, you can modified the `runSnake.sh` script and then:
 ```bash
 sbatch runSnake.sh
 ```
