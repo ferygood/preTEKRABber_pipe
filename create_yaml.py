@@ -9,9 +9,11 @@ def create_yaml_file(yaml_file, output_dir):
     fastq_files = [filename for filename in os.listdir("./data") if filename.endswith(".fastq.gz")]
 
     # Extract prefixes from the file names
-    fastq_prefixes = [re.search(r"(.+?)\.r[12]\.fastq\.gz", filename).group(1) for filename in fastq_files]
+    # you can modify line13 to match your files
+    fastq_prefixes = list(set([re.search(r"(.+?)\.r[12]\.fastq\.gz", filename).group(1) for filename in fastq_files]))
 
     # Create YAML data
+    # modify the below dictionary if you are using different version of reference, tools
     yaml_data = {
         "output_dir": output_dir,
         "packages": {

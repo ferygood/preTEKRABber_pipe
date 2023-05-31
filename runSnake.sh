@@ -13,4 +13,4 @@
 date
 hostname
 
-snakemake -s preTEKRABber.snake --configfile config.yml  --use-conda --cores 2
+snakemake -s preTEKRABber.snake --configfile config.yaml --use-conda --cores 2

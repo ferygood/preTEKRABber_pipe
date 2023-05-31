@@ -1,0 +1,18 @@
+rule all:
+    input:
+        expand("star/{genome}", genome=["hg19", "panTro4", "ponAbe2"])
+
+rule star_index:
+    input:
+        fasta="{genome}.fa",
+    output:
+        directory("star/{genome}"),
+    message:
+        "building STAR index"
+    threads: 4,
+    params:
+        extra="",
+    log:
+        "logs/star_index_{genome}.log",
+    wrapper:
+        "v1.31.1/bio/star/index"
