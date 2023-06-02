@@ -1,0 +1,29 @@
+output_dir = config["output_dir"]
+
+rule all:
+    input:
+        expand("{output_dir}/counts/{prefix}.cntTable", output_dir=output_dir, prefix=config["fastq_prefixes"])
+
+
+rule sort_by_name:
+    input:
+        bam_in="{prefix}Aligned.out.bam"
+    output:
+        bam_out="{output_dir}/aligned_sorted/{prefix}_sortedByName.bam"
+    conda:
+        "envs/TEcount.yaml"
+    shell:
+        "samtools sort -n {input.bam_in} -o {output.bam_out}"
+
+rule quantify_counts:
+    input:
+        bam_in="{output_dir}/aligned_sorted/{prefix}_sortedByName.bam",
+        gtf=config["packages"]["tetranscripts"]["gtf"],
+        rmsk=config["packages"]["tetranscripts"]["rmsk"]
+    output:
+        counts_out="{output_dir}/counts/{prefix}.cntTable"
+    conda:
+        "envs/TEcount.yaml"
+    shell:
+        "TEcount -b {input.bam_in} --GTF {input.gtf} --TE {input.rmsk} --project {wildcards.output_dir}/counts/{wildcards.prefix}"
+

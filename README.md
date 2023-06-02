@@ -38,5 +38,7 @@ star==2.7.10b
 tetranscripts==2.2.3
 ```
 
-
+## Others
+1. `envs` folder has the conda env setting for packages
+2. `others` folder has some modified substracted snakefiles from the `preTEKRABber.snake` for certain usage. It is recommend that you start from the `preTEKRABber.snake`.
 
